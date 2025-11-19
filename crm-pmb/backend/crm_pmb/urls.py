@@ -22,4 +22,5 @@ urlpatterns = [
 
     # API endpoints
     path('api/clientes/', include('clientes.urls')),
+    path('api/origens/', include('origens.urls')),
 ]
