@@ -48,7 +48,7 @@ class SetorAtendimento(models.Model):
 
 
 class DispositivoWhatsApp(models.Model):
-    """Modelo para representar dispositivos/instâncias WhatsApp conectados via Evolution API"""
+    """Modelo para representar dispositivos/instâncias WhatsApp conectados via WhatsApp Business API Oficial"""
 
     STATUS_CHOICES = [
         ('CONECTADO', 'Conectado'),
@@ -68,22 +68,40 @@ class DispositivoWhatsApp(models.Model):
         verbose_name="Número do WhatsApp"
     )
 
-    # Configurações Evolution API
-    instance_name = models.CharField(
+    # Configurações WhatsApp Business API Oficial
+    phone_number_id = models.CharField(
         max_length=100,
         unique=True,
-        help_text="Nome da instância na Evolution API",
-        verbose_name="Nome da Instância (Evolution API)"
+        default='',
+        help_text="ID do número de telefone na WhatsApp Business API",
+        verbose_name="Phone Number ID"
     )
-    api_key = models.CharField(
+    business_account_id = models.CharField(
+        max_length=100,
+        default='',
+        help_text="ID da conta WhatsApp Business",
+        verbose_name="Business Account ID"
+    )
+    access_token = models.CharField(
+        max_length=500,
+        default='',
+        help_text="Token de acesso permanente da WhatsApp Business API",
+        verbose_name="Access Token"
+    )
+
+    # Webhooks
+    webhook_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text="URL para receber webhooks da WhatsApp Business API",
+        verbose_name="Webhook URL"
+    )
+    webhook_verify_token = models.CharField(
         max_length=255,
-        help_text="API Key da Evolution API",
-        verbose_name="API Key"
-    )
-    api_url = models.URLField(
-        help_text="URL base da Evolution API",
-        verbose_name="URL da API",
-        default="https://api.evolution.com.br"
+        blank=True,
+        null=True,
+        help_text="Token para verificação do webhook",
+        verbose_name="Webhook Verify Token"
     )
 
     # Status e conexão
@@ -93,16 +111,15 @@ class DispositivoWhatsApp(models.Model):
         default='DESCONECTADO',
         verbose_name="Status"
     )
-    qr_code = models.TextField(
-        blank=True,
-        null=True,
-        help_text="QR Code para conexão (base64)",
-        verbose_name="QR Code"
-    )
     ultima_conexao = models.DateTimeField(
         blank=True,
         null=True,
         verbose_name="Última Conexão"
+    )
+    ultima_verificacao = models.DateTimeField(
+        blank=True,
+        null=True,
+        verbose_name="Última Verificação de Status"
     )
 
     # Setor responsável
@@ -117,11 +134,16 @@ class DispositivoWhatsApp(models.Model):
 
     # Configurações
     ativo = models.BooleanField(default=True, verbose_name="Ativo")
-    webhook_url = models.URLField(
-        blank=True,
-        null=True,
-        help_text="URL para receber webhooks da Evolution API",
-        verbose_name="Webhook URL"
+
+    # Limites da API
+    limite_mensal_conversas = models.IntegerField(
+        default=1000,
+        help_text="Limite de conversas gratuitas por mês",
+        verbose_name="Limite Mensal de Conversas"
+    )
+    conversas_usadas_mes = models.IntegerField(
+        default=0,
+        verbose_name="Conversas Usadas no Mês"
     )
 
     # Metadados
@@ -139,6 +161,10 @@ class DispositivoWhatsApp(models.Model):
         verbose_name = "Dispositivo WhatsApp"
         verbose_name_plural = "Dispositivos WhatsApp"
         ordering = ['-criado_em']
+        indexes = [
+            models.Index(fields=['phone_number_id']),
+            models.Index(fields=['business_account_id']),
+        ]
 
     def __str__(self):
         return f"{self.nome} ({self.numero_telefone})"
@@ -147,13 +173,32 @@ class DispositivoWhatsApp(models.Model):
         """Marca dispositivo como conectado"""
         self.status = 'CONECTADO'
         self.ultima_conexao = timezone.now()
-        self.qr_code = None
         self.save()
 
     def marcar_desconectado(self):
         """Marca dispositivo como desconectado"""
         self.status = 'DESCONECTADO'
         self.save()
+
+    def verificar_status(self):
+        """Verifica status da conexão com a API"""
+        self.ultima_verificacao = timezone.now()
+        self.save()
+
+    def resetar_contador_mensal(self):
+        """Reseta contador de conversas do mês (executar via cron)"""
+        self.conversas_usadas_mes = 0
+        self.save()
+
+    def incrementar_conversa(self):
+        """Incrementa contador de conversas usadas"""
+        self.conversas_usadas_mes += 1
+        self.save()
+
+    @property
+    def limite_atingido(self):
+        """Verifica se o limite mensal foi atingido"""
+        return self.conversas_usadas_mes >= self.limite_mensal_conversas
 
 
 class Conversa(models.Model):
