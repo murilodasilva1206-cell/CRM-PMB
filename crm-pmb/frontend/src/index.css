@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset e Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: #213547;
+  background-color: #ffffff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* ========================================
+   METRION Dark Theme - Select Styles
+   ======================================== */
+
+/* Select padrão dark (usado em toda a aplicação) */
+.dark-select {
+  /* Texto e fundo quando fechado */
+  color: #e5e7eb !important;             /* Texto claro (gray-200) */
+  background-color: rgba(255, 255, 255, 0.05) !important; /* Fundo semi-transparente */
+
+  /* Border e radius */
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 10px !important;
+
+  /* Padding e font */
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+
+  /* Cursor e transição */
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+
+  /* Remove aparência padrão do browser */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Ícone de seta customizado */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e5e7eb' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 36px !important;
+}
+
+/* Hover no select */
+.dark-select:hover {
+  border-color: rgba(124, 58, 237, 0.4) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Focus no select */
+.dark-select:focus {
+  outline: none !important;
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* CRÍTICO: Estilizar as options (dropdown) */
+.dark-select option {
+  background-color: #020617 !important; /* Fundo muito escuro (slate-950) */
+  color: #e5e7eb !important;            /* Texto claro (gray-200) */
+  padding: 10px !important;
+  font-size: 13px !important;
+}
+
+/* Option hover (funciona em alguns browsers) */
+.dark-select option:hover {
+  background-color: #1e1b4b !important; /* Roxo escuro */
+  color: #ffffff !important;
+}
+
+/* Option selected */
+.dark-select option:checked {
+  background-color: #7c3aed !important; /* Roxo */
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* Disabled state */
+.dark-select:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* ========================================
+   Dark Input (para consistência)
+   ======================================== */
+
+.dark-input {
+  color: #e5e7eb !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  transition: all 0.2s ease !important;
+}
+
+.dark-input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-size: 13px !important;
+}
+
+.dark-input:hover {
+  border-color: rgba(124, 58, 237, 0.4) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark-input:focus {
+  outline: none !important;
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* ========================================
+   Dark Checkbox
+   ======================================== */
+
+.dark-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #7c3aed; /* Cor roxa quando marcado */
+}
+
+/* ========================================
+   Animações de Spinner (já existente no Fila.jsx)
+   ======================================== */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

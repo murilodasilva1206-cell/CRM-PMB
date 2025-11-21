@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-kv4be1h9_cg&e(6=5)p6+%s^b0h+la=934lrfw@&te5v59fit(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -36,10 +36,18 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+
+    # FASE 5.4: Channels/Daphne devem vir antes de staticfiles
+    # IMPORTANTE: Instale antes: pip install channels==4.0.0 channels-redis==4.2.0 daphne==4.1.0
+    # 'daphne',  # Descomentar após instalar dependências
+
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
     'django_filters',
+
+    # FASE 5.4: Django Channels para WebSocket
+    # 'channels',  # Descomentar após instalar dependências
 
     # Nossas apps do CRM
     'usuarios',
@@ -139,6 +147,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_FILTER_BACKENDS': [
@@ -150,8 +159,49 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 25,
 }
 
+# Simple JWT Configuration
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+}
+
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
 # User model customizado
 AUTH_USER_MODEL = 'usuarios.User'
+
+# WhatsApp Business API Configuration
+WHATSAPP_API_URL = 'https://graph.facebook.com/v18.0'
+WHATSAPP_VERIFY_TOKEN = 'seu_token_de_verificacao_whatsapp'  # Alterar em produção
+
+# Integration Token (n8n, IA, etc)
+INTEGRATION_TOKEN = 'seu_token_de_integracao_seguro'  # Alterar em produção
+
+# FASE 4.6-B: URL do webhook n8n para receber eventos de mensagens
+N8N_WHATSAPP_URL = None  # Exemplo: 'https://seu-n8n.com/webhook/whatsapp-eventos'
+
+# FASE 5.4: Django Channels Configuration
+# IMPORTANTE: Descomentar após instalar dependências (channels, daphne, channels-redis)
+# ASGI_APPLICATION = 'crm_pmb.asgi.application'
+
+# FASE 5.4: Channels Layer (Redis backend para produção, InMemory para dev)
+# CHANNEL_LAYERS = {
+#     'default': {
+#         # Para desenvolvimento: InMemoryChannelLayer
+#         'BACKEND': 'channels.layers.InMemoryChannelLayer',
+#
+#         # Para produção, descomentar Redis:
+#         # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         # 'CONFIG': {
+#         #     "hosts": [('127.0.0.1', 6379)],
+#         # },
+#     },
+# }
